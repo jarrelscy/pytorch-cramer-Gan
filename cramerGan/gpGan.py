@@ -45,8 +45,8 @@ def gp_gans(netG, netD, real, z, args):
 
 def train_gans(x_sampler, model_root, mode_name, netG, netD, args):
 
-    optimizerD = optim.Adam(netD.parameters(), lr= args.lr, betas=(0.5, 0.9), weight_decay=args.weight_decay)
-    optimizerG = optim.Adam(netG.parameters(), lr= args.lr, betas=(0.5, 0.9), weight_decay=args.weight_decay)
+    optimizerD = optim.Adam(netD.parameters(), lr= args.d_lr, betas=(0.5, 0.9), weight_decay=args.weight_decay)
+    optimizerG = optim.Adam(netG.parameters(), lr= args.g_lr, betas=(0.5, 0.9), weight_decay=args.weight_decay)
 
     #optimizerD = optim.RMSprop(netD.parameters(), lr= args.lr,  weight_decay=args.weight_decay)
     #optimizerG = optim.RMSprop(netG.parameters(), lr= args.lr,  weight_decay=args.weight_decay)

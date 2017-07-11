@@ -103,14 +103,14 @@ def train_gans(x_sampler, model_root, mode_name, netG, netD, args):
             g_loss, d_loss = cramer_gans(netG, netD, real, z1, z2, args)
             d_loss_plot.plot(d_loss.cpu().data.numpy().mean())
             
-            d_loss.backward(retain_variables=True)
+            d_loss.backward()
             optimizerD.step()
             
         # (2) Update G network
         for p in netD.parameters():
             p.requires_grad = False  # to avoid computation
         
-        #g_loss, d_loss = cramer_gans(netG, netD, real, z1, z2, args)
+        g_loss, d_loss = cramer_gans(netG, netD, real, z1, z2, args)
         g_loss_plot.plot(g_loss.cpu().data.numpy().mean())
         netG.zero_grad()
         g_loss.backward()

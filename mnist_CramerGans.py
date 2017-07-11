@@ -32,7 +32,7 @@ if  __name__ == '__main__':
                         help='weight decay for training')
     parser.add_argument('--maxepoch', type=int, default=12800000, metavar='N',
                         help='number of epochs to train (default: 10)')
-    parser.add_argument('--lr', type=float, default = 0.0001, metavar='LR',
+    parser.add_argument('--lr', type=float, default = 0.001, metavar='LR',
                         help='learning rate (default: 0.01)')
     parser.add_argument('--momentum', type=float, default=0.9, metavar='M',
                         help='SGD momentum (default: 0.5)')
@@ -65,8 +65,8 @@ if  __name__ == '__main__':
 
     args.cuda = args.cuda and torch.cuda.is_available()
 
-    netD = Disc(input_dim = 28, num_chan =1, hid_dim = 64, out_dim = 16 )
-    netG = Gen(input_dim  = 28, noise_dim = args.noise_dim, num_chan=1, hid_dim= 64)
+    netD = Disc(input_size = 28, num_chan =1, hid_dim = 64, out_dim = 16 )
+    netG = Gen(input_size  = 28, noise_dim = args.noise_dim, num_chan=1, hid_dim= 64)
 
     if args.cuda:
         netD = netD.cuda()

@@ -1,25 +1,31 @@
-from cramerGan.Models import MLP_D as Disc
-from cramerGan.Models import MLP_G as Gen
+from cramerGan.Models import DCGAN_D as Disc
+from cramerGan.Models import DCGAN_G as Gen
 
 from cramerGan.gpGan import train_gans
-from data import mnist
 import numpy as np
 import argparse
-import torch
+import torch, h5py
+
+h5dataFile = '/home/yuanpu/Dropbox/DataSet/Cat/CatImg_size_64.h5'
 
 class DataIterator:
-    def __init__(self, train_gen):
+    def __init__(self, h5data, batch_size):
         '''
         data: a hdf5 opened pointer
         Index: one array index, [3,5,1,9, 100] index of candidates 
         '''
         self.__dict__.update(locals())
-
+        self.images = h5data['images']
+        self.total_imgs = self.images.shape[0]
+        self.batch = np.zeros((self.batch_size, )+ self.images.shape[1::]).astype(np.float32)
     def next(self):
         return self.__next__()
+
     def __next__(self):
-        images,targets = self.train_gen().__next__()
-        return images.reshape( (images.shape[0], 1, 28, 28))
+	random_indexes = np.random.choice(self.total_imgs,  size=self.batch_size, replace=False)
+        for idx, index in enumerate(random_indexes):
+            self.batch[idx] = self.images[index]
+        return self.batch
 
     def __iter__(self):
         return self
@@ -32,9 +38,9 @@ if  __name__ == '__main__':
                         help='weight decay for training')
     parser.add_argument('--maxepoch', type=int, default=12800000, metavar='N',
                         help='number of epochs to train (default: 10)')
-    parser.add_argument('--g_lr', type=float, default = 0.00005, metavar='LR',
+    parser.add_argument('--g_lr', type=float, default = .0001, metavar='LR',
                         help='learning rate (default: 0.01)')
-    parser.add_argument('--d_lr', type=float, default = 0.00005, metavar='LR',
+    parser.add_argument('--d_lr', type=float, default = .0001, metavar='LR',
                         help='learning rate (default: 0.01)')
 
     parser.add_argument('--momentum', type=float, default=0.9, metavar='M',
@@ -49,15 +55,15 @@ if  __name__ == '__main__':
     
     parser.add_argument('--save_freq', type=int, default= 200, metavar='N',
                         help='how frequent to save the model')
-    parser.add_argument('--display_freq', type=int, default= 100, metavar='N',
+    parser.add_argument('--display_freq', type=int, default= 10, metavar='N',
                         help='plot the results every {} batches')
     
-    parser.add_argument('--batch_size', type=int, default=2, metavar='N',
+    parser.add_argument('--batch_size', type=int, default=4, metavar='N',
                         help='batch size.')
 
     parser.add_argument('--gp_lambda', type=int, default=10, metavar='N',
                         help='the channel of each image.')
-    parser.add_argument('--noise_dim', type=int, default=10, metavar='N',
+    parser.add_argument('--noise_dim', type=int, default=100, metavar='N',
                         help='dimension of gaussian noise.')
     parser.add_argument('--ncritic', type=int, default= 5, metavar='N',
                         help='the channel of each image.')
@@ -68,15 +74,15 @@ if  __name__ == '__main__':
 
     args.cuda = args.cuda and torch.cuda.is_available()
 
-    netD = Disc(input_size = 28, num_chan =1, hid_dim = 64, out_dim = 1 )
-    netG = Gen(input_size  = 28, noise_dim = args.noise_dim, num_chan=1, hid_dim= 64)
+    netD = Disc(input_size = 64, num_chan = 3, hid_dim = 32, out_dim = 1, )
+    netG = Gen(input_size  = 64, noise_dim = args.noise_dim, num_chan=3, hid_dim= 32)
 
     if args.cuda:
         netD = netD.cuda()
         netG = netG.cuda()
-
-    train_gen, dev_gen, test_gen = mnist.load(args.batch_size)
-    data_sampler = DataIterator(train_gen).next
-    model_root, model_name = 'model', 'mnist_gp_mlp'
     
-    train_gans(data_sampler, model_root, model_name, netG, netD,args)
+    with h5py.File(h5dataFile, 'r') as h5_data:
+        data_sampler = DataIterator(h5_data, args.batch_size).next
+        model_root, model_name = 'model', 'cat_gpWgan'
+        
+        train_gans(data_sampler, model_root, model_name, netG, netD,args)

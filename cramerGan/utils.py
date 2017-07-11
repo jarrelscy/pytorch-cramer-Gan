@@ -13,7 +13,6 @@ import torch.nn.functional as F
 from torch.autograd import Variable
 import torch.nn as nn
 
-
 def to_variable(x, requires_grad=True, cuda=False, var=True,volatile=False):
     
     if type(x) is Variable:
@@ -93,8 +92,20 @@ class plot_scalar(object):
 def plot_img(X=None, win= None, env=None, plot=None):
     if plot is None:
         plot = Visdom()
-    plot.heatmap(X=np.flipud(X), win=win,
+    if X.ndim == 2:
+        plot.heatmap(X=np.flipud(X), win=win,
                  opts=dict(title=win), env=env)
+    elif X.ndim == 3:
+        # X is BWC
+        norm_img = normalize_img(X)
+        plot.image(norm_img.transpose(2,0,1), win=win,
+                   opts=dict(title=win), env=env)
+
+def normalize_img(X):
+    min_, max_ = np.min(X), np.max(X)
+    X = (X - min_)/ (max_ - min_ + 1e-9)
+    X = X*255
+    return X.astype(np.uint8)
 
 def save_images(X, save_path=None, save=True, dim_ordering='tf'):
     # [0, 1] -> [0,255]
@@ -128,9 +139,7 @@ def save_images(X, save_path=None, save=True, dim_ordering='tf'):
         rs, cs = j*(h+hgap), i*(w+wgap)
         #print(i,j, h,w, x.shape, img.shape, rs,cs, rs+h,cs+w )
         img[rs:rs+h, cs:cs+w] = x
-
     if c == 1:
-
         img = img[:,:,0]
     #imshow(img)
     #print(save_path)
