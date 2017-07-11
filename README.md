@@ -11,8 +11,8 @@ and
 
 ## Acknowlegement
 The following repositories are of great help.
- tensorflow cramer gan https://github.com/jiamings/cramer-gan
- wgan-gp  https://github.com/caogang/wgan-gp
+ 1. tensorflow cramer gan https://github.com/jiamings/cramer-gan
+ 2. wgan-gp  https://github.com/caogang/wgan-gp
 
 ## Author
 Yuanpu Xie

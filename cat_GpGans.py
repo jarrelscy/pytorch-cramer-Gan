@@ -45,7 +45,7 @@ if  __name__ == '__main__':
 
     parser.add_argument('--momentum', type=float, default=0.9, metavar='M',
                         help='SGD momentum (default: 0.5)')
-    parser.add_argument('--reuse_weigths', action='store_false', default = False,
+    parser.add_argument('--reuse_weigths', action='store_false', default = True,
                         help='continue from last checkout point')
     parser.add_argument('--show_progress', action='store_false', default = True,
                         help='show the training process using images')
@@ -55,17 +55,17 @@ if  __name__ == '__main__':
     
     parser.add_argument('--save_freq', type=int, default= 200, metavar='N',
                         help='how frequent to save the model')
-    parser.add_argument('--display_freq', type=int, default= 10, metavar='N',
+    parser.add_argument('--display_freq', type=int, default= 100, metavar='N',
                         help='plot the results every {} batches')
     
-    parser.add_argument('--batch_size', type=int, default=4, metavar='N',
+    parser.add_argument('--batch_size', type=int, default=2, metavar='N',
                         help='batch size.')
 
     parser.add_argument('--gp_lambda', type=int, default=10, metavar='N',
                         help='the channel of each image.')
     parser.add_argument('--noise_dim', type=int, default=100, metavar='N',
                         help='dimension of gaussian noise.')
-    parser.add_argument('--ncritic', type=int, default= 5, metavar='N',
+    parser.add_argument('--ncritic', type=int, default= 2, metavar='N',
                         help='the channel of each image.')
     parser.add_argument('--save_folder', type=str, default= 'tmp_images', metavar='N',
                         help='folder to save the temper images.')
