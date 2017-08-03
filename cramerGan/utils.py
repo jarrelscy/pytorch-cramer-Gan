@@ -7,12 +7,23 @@ import random
 
 import scipy.misc
 from scipy.misc import imsave
-
+from PIL import Image
 import torch
 import torch.nn.functional as F
 from torch.autograd import Variable
 import torch.nn as nn
-
+class RGBToGray(object):
+    def __init__(self):
+        pass
+    def __call__(self, tensor):
+        """
+        Args:
+            tensor (Tensor): Tensor image of size (C, H, W) to be normalized.
+        Returns:
+            Tensor: Normalized image.
+        """
+        return torch.mean(tensor,dim=0, keepdim=True)
+    
 def to_variable(x, requires_grad=True, cuda=False, var=True,volatile=False):
     
     if type(x) is Variable:
@@ -92,9 +103,12 @@ class plot_scalar(object):
 def plot_img(X=None, win= None, env=None, plot=None):
     if plot is None:
         plot = Visdom()
+    #if X.shape[1] == 1:
+    #    X = X.reshape((X.shape[0],)+X.shape[2:])
+    
     if X.ndim == 2:
         plot.heatmap(X=np.flipud(X), win=win,
-                 opts=dict(title=win), env=env)
+                 opts=dict(title=win, colormap='Greys'), env=env)
     elif X.ndim == 3:
         # X is BWC
         norm_img = normalize_img(X)
@@ -106,17 +120,32 @@ def normalize_img(X):
     X = (X - min_)/ (max_ - min_ + 1e-9)
     X = X*255
     return X.astype(np.uint8)
+def writeImg(arr,save):
+    arr += 1.0
+    arr *= 128
+    arr = arr.clip(0,255)
+    print ('Save', arr.min(), arr.max())
+    im = Image.fromarray(arr.astype(np.uint8))
+    return im.save(save)
 
-def save_images(X, save_path=None, save=True, dim_ordering='tf'):
+def save_images(X, save_path=None, save=True, dim_ordering='tf', num_images=9):
     # [0, 1] -> [0,255]
     #if isinstance(X.flatten()[0], np.floating):
     #    X = (255.99*X).astype('uint8')
-    n_samples = X.shape[0]
+    
+    if type(X) is Variable:
+        X = X.cpu().data.numpy()
+    if type(X) is torch.FloatTensor:
+        X = X.numpy()
+    X = X[:num_images]
+    n_samples = X.shape[0]    
     rows = int(np.sqrt(n_samples))
     while n_samples % rows != 0:
         rows -= 1
 
     nh, nw = rows, n_samples//rows
+    
+    
 
     if X.ndim == 4:
         # BCHW -> BHWC
@@ -144,5 +173,5 @@ def save_images(X, save_path=None, save=True, dim_ordering='tf'):
     #imshow(img)
     #print(save_path)
     if save:
-        writeImg(img.astype(np.uint8), save_path)
+        writeImg(img, save_path)
     return img

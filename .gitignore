@@ -3,7 +3,7 @@
 *py~
 neuraltalk2/data/*
 memcap/data/*
-#data/*
+data/*
 model/*
 BackUpCap/*
 *.swp
