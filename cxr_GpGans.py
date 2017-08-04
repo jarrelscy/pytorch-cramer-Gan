@@ -26,7 +26,7 @@ if  __name__ == '__main__':
 
     parser.add_argument('--momentum', type=float, default=0.9, metavar='M',
                         help='SGD momentum (default: 0.5)')
-    parser.add_argument('--reuse_weights', action='store_false', default = True,
+    parser.add_argument('--reuse_weights', action='store_false', default = False,
                         help='continue from last checkout point')
     parser.add_argument('--show_progress', action='store_false', default = True,
                         help='show the training process using images')
@@ -42,9 +42,9 @@ if  __name__ == '__main__':
                         help='path to dataset.')
     parser.add_argument('--batch_size', type=int, default=64, metavar='N',
                         help='batch size.')
-    parser.add_argument('--image_size', type=int, default=64, metavar='N',
+    parser.add_argument('--image_size', type=int, default=128, metavar='N',
                         help='image size.')
-    parser.add_argument('--random_crop', type=int, default=8, metavar='N',
+    parser.add_argument('--random_crop', type=int, default=16, metavar='N',
                         help='random crop size.')
     parser.add_argument('--gpunum'  , type=int, default=0, help='which of GPUs to use')
     parser.add_argument('--gp_lambda', type=int, default=10, metavar='N',
@@ -73,8 +73,8 @@ if  __name__ == '__main__':
     cudnn.benchmark = True
 
                         
-    netD = Disc(input_size = args.image_size, num_chan = 1, hid_dim = 32, out_dim = 1, )
-    netG = Gen(input_size  = args.image_size, noise_dim = args.noise_dim, num_chan=1, hid_dim= 32)
+    netD = Disc(input_size = args.image_size, num_chan = 1, hid_dim = 64, out_dim = 1, )
+    netG = Gen(input_size  = args.image_size, noise_dim = args.noise_dim, num_chan=1, hid_dim= 64)
 
     if args.cuda:
         netD = netD.cuda()

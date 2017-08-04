@@ -21,8 +21,6 @@ if  __name__ == '__main__':
     parser.add_argument('--maxepoch', type=int, default=12800000, metavar='N',
                         help='number of epochs to train (default: 10)')
     parser.add_argument('--lr', type=float, default = 0.001, metavar='LR',
-
-
                         help='learning rate (default: 0.001)')
 
     parser.add_argument('--momentum', type=float, default=0.9, metavar='M',
@@ -58,7 +56,7 @@ if  __name__ == '__main__':
                         help='dimension of gaussian noise.')
     parser.add_argument('--workers', type=int, default=10, metavar='N',
                         help='number of data workers.')
-    parser.add_argument('--median_filter_length', type=int, default=100, metavar='N',
+    parser.add_argument('--median_filter_length', type=int, default=200, metavar='N',
                         help='number of losses to put median filter over.')
     parser.add_argument('--ncritic', type=int, default= 5, metavar='N',
                         help='the number of times to train the critic per batch.')

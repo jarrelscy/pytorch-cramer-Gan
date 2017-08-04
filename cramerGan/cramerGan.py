@@ -115,8 +115,9 @@ def train_gans(x_sampler, model_root, mode_name, netG, netD, args):
                 g_losses.append(g_loss.cpu().data.numpy().mean())
                 d_loss_plot.plot(d_loss.cpu().data.numpy().mean())
                 d_median_loss_plot.plot(np.median(d_losses[-args.median_filter_length:]))
-
+                
                 d_loss.backward()
+                nn.utils.clip_grad_norm(netD.parameters(), 1.0)
                 optimizerD.step()
                 i += 1
                 j += 1
@@ -132,6 +133,7 @@ def train_gans(x_sampler, model_root, mode_name, netG, netD, args):
             g_median_loss_plot.plot(np.median(g_losses[-args.median_filter_length:]))
             netG.zero_grad()
             g_loss.backward()
+            nn.utils.clip_grad_norm(netG.parameters(), 1.0)
             optimizerG.step()
             #real = x_sampler()
             #batch_size = real.shape[0]
